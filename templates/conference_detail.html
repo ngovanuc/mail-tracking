@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Chi tiết hội nghị</title>
+    <link rel="stylesheet" href="/public/conference-detail.css" />
+</head>
+
+<body>
+    <header class="page-header">
+        <!-- <h1>Chi tiết hội nghị</h1>
+        <a href="/home" class="btn btn-outline">Quay lại danh sách</a> -->
+        <div class="left-menu">
+            <h1>Chi tiết hội nghị</h1>
+        </div>
+        <div class="right-menu">
+            <div class="back-button">
+                <a href="/home/{{ conference.name }}/contacts">
+                    <div class="contacts-button">Contacts</div>
+                </a>
+            </div>
+
+            <div class="sending-button">
+                <a href="/home/{{ conference.name }}/sending">
+                    <div class="sending-button">Sending</div>
+                </a>
+            </div>
+
+            <div class="back">
+                <a href="/home">
+                    <div class="back-button">Back</div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <br>
+
+    <div class="information">
+        <div class="info-row">
+            <span class="info-label"><b>Conference name:</b></span>
+            <span class="info-value">{{ conference.name }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><b>Location:</b></span>
+            <span class="info-value">{{ conference.location }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><b>Date:</b></span>
+            <span class="info-value">{{ conference.date }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><b>Link conference:</b></span>
+            <span class="info-value">
+                <a href="{{ conference.link_conference }}" target="_blank">{{ conference.link_conference }}</a>
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><b>Description:</b></span>
+            <span class="info-value">{{ conference.description }}</span>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="card-grid">
+        <div class="card blue">
+            <h3>Total emails recipients</h3>
+            <p class="value">{{ total_recipients }} </p>
+            <!-- <p class="note">Saved 25%</p> -->
+        </div>
+        <div class="card cyan">
+            <h3>Total sent</h3>
+            <p class="value">{{ total_sent }}</p>
+            <!-- <p class="note">Saved 25%</p> -->
+        </div>
+        <div class="card purple">
+            <h3>Total seen</h3>
+            <p class="value">{{ total_opened }}</p>
+            <!-- <p class="note">Saved 25%</p> -->
+        </div>
+        <div class="card green">
+            <h3>Total clicked</h3>
+            <p class="value">{{ total_clicked }}</p>
+            <!-- <p class="note">Saved 65%</p> -->
+        </div>
+        <div class="card red">
+            <h3>Total failed</h3>
+            <p class="value">{{ total_failed }}</p>
+            <!-- <p class="note">Saved 65%</p> -->
+        </div>
+        <div class="card orange">
+            <h3>Total unsubscribed</h3>
+            <p class="value">{{ total_unsubscribed }}</p>
+            <!-- <p class="note">Saved 65%</p> -->
+        </div>
+    </div>
+
+    <br>
+
+    <main class="dash-container">
+        <!-- Cột bên trái -->
+        <section class="dash-card dash-chart">
+            <h2>Email sent per Day</h2>
+            <div class="dash-bars">
+                <!-- Hệ số 0.5x so với số lượng mail gửi hằng ngày để ra số px chiều cao -->
+                <div class="dash-bar">
+                    <div>400</div>
+                    <div class="dash-bar-fill" style="height: 200px"></div>
+                    <span class="dash-bar-label">Mon</span>
+                </div>
+                <div class="dash-bar">
+                    <div>140</div>
+                    <div class="dash-bar-fill" style="height: 70px"></div>
+                    <span class="dash-bar-label">Tue</span>
+                </div>
+                <div class="dash-bar">
+                    <div>180</div>
+                    <div class="dash-bar-fill" style="height: 90px"></div>
+                    <span class="dash-bar-label">Wed</span>
+                </div>
+                <div class="dash-bar">
+                    <div>120</div>
+                    <div class="dash-bar-fill" style="height: 30px"></div>
+                    <span class="dash-bar-label">Thu</span>
+                </div>
+                <div class="dash-bar">
+                    <div>240</div>
+                    <div class="dash-bar-fill" style="height: 60px"></div>
+                    <span class="dash-bar-label">Fri</span>
+                </div>
+                <div class="dash-bar">
+                    <div>400</div>
+                    <div class="dash-bar-fill" style="height: 60px"></div>
+                    <span class="dash-bar-label">Sat</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cột bên phải -->
+        <section class="dash-card">
+            <h2>Ratios Report</h2>
+            <div class="dash-circles-grid">
+
+                <!-- Gauge 1 -->
+                <div class="skill">
+                    <div class="outer">
+                        <div class="inner">
+                            <div id="number1">0%</div>
+                            <span>Sent</span>
+                        </div>
+                    </div>
+                    <svg width="160" height="160">
+                        <defs>
+                            <linearGradient id="GradientColor1">
+                                <stop offset="0%" stop-color="#3b82f6" />
+                                <stop offset="100%" stop-color="#2563eb" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="80" cy="80" r="70" stroke-linecap="round" stroke="url(#GradientColor1)" />
+                    </svg>
+                </div>
+
+                <!-- Gauge 2 -->
+                <div class="skill">
+                    <div class="outer">
+                        <div class="inner">
+                            <div id="number2">0%</div>
+                            <span>Opened</span>
+                        </div>
+                    </div>
+                    <svg width="160" height="160">
+                        <defs>
+                            <linearGradient id="GradientColor2">
+                                <stop offset="0%" stop-color="#10b981" />
+                                <stop offset="100%" stop-color="#047857" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="80" cy="80" r="70" stroke-linecap="round" stroke="url(#GradientColor2)" />
+                    </svg>
+                </div>
+
+                <!-- Gauge 3 -->
+                <div class="skill">
+                    <div class="outer">
+                        <div class="inner">
+                            <div id="number3">0%</div>
+                            <span>Clicked</span>
+                        </div>
+                    </div>
+                    <svg width="160" height="160">
+                        <defs>
+                            <linearGradient id="GradientColor3">
+                                <stop offset="0%" stop-color="#f59e0b" />
+                                <stop offset="100%" stop-color="#b45309" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="80" cy="80" r="70" stroke-linecap="round" stroke="url(#GradientColor3)" />
+                    </svg>
+                </div>
+
+                <!-- Gauge 4 -->
+                <div class="skill">
+                    <div class="outer">
+                        <div class="inner">
+                            <div id="number4">0%</div>
+                            <span>Failed</span>
+                        </div>
+                    </div>
+                    <svg width="160" height="160">
+                        <defs>
+                            <linearGradient id="GradientColor4">
+                                <stop offset="0%" stop-color="#ef4444" />
+                                <stop offset="100%" stop-color="#b91c1c" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="80" cy="80" r="70" stroke-linecap="round" stroke="url(#GradientColor4)" />
+                    </svg>
+                </div>
+
+                <!-- Gauge 5 -->
+                <div class="skill">
+                    <div class="outer">
+                        <div class="inner">
+                            <div id="number5">0%</div>
+                            <span>Unsubscribed</span>
+                        </div>
+                    </div>
+                    <svg xlmns="http://www.w3.org/2000/svg" version="1.1" width="160px" height="160px">
+                        <defs>
+                            <linearGradient id="GradientColor">
+                                <stop offset="0%" stop-color="#DA22FF" />
+                                <stop offset="100%" stop-color="#9733EE" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="80" cy="80" r="70" stroke-linecap="round" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <br>
+
+    <script>
+        const values = [80, 65, 40, 20, 10];
+
+        values.forEach((val, i) => {
+            let number = document.getElementById(`number${i + 1}`);
+            let counter = 0;
+            let circle = document.querySelectorAll(".dash-circles-grid circle")[i];
+            let radius = 70;
+            let circumference = 2 * Math.PI * radius;
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = circumference;
+
+            let interval = setInterval(() => {
+                if (counter >= val) {
+                    clearInterval(interval);
+                } else {
+                    counter++;
+                    number.textContent = counter + "%";
+                    circle.style.strokeDashoffset = circumference - (circumference * counter / 100);
+                }
+            }, 30);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm hội nghị mới</title>
+    <link rel="stylesheet" href="/public/add-conference.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="left-header">
+            <h1>Thêm hội nghị mới để gửi mail</h1>
+        </div>
+        <div class="right-header">
+            <a href="/home">
+                <div class="back-box">Trở về trang chủ</div>
+            </a>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="fill-form">
+        <div class="left-fill-form">
+            <form action="/home/addconference" method="post" class="conference-form" enctype="multipart/form-data">
+                <h2>Thêm Hội Nghị Mới</h2>
+
+                <div class="form-group">
+                    <label for="name">Tên hội nghị</label>
+                    <input type="text" id="name" name="name" placeholder="Nhập tên hội nghị" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Địa điểm</label>
+                    <input type="text" id="location" name="location" placeholder="Nhập địa điểm" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Ngày hội nghị</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="link_conference">Link hội nghị</label>
+                    <input type="url" id="link_conference" name="link_conference" placeholder="Nhập link hội nghị"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Mô tả <small>(tối đa 200 ký tự)</small></label>
+                    <textarea id="description" name="description" rows="3" maxlength="200"
+                        placeholder=" Thêm mô tả..."></textarea>
+                    <div id="char-count">0 / 200</div>
+                </div>
+
+                <h3>User upload:</h3>
+                <!-- Form upload file excel contacts -->
+                <div class="form-group">
+                    <label for="excel_file">Tải lên file Excel (Chứa các contacts)</label>
+                    <input type="file" id="excel_file" name="excel_file" accept=".xlsx, .xls">
+                </div>
+
+                <!-- Form upload file HTML template sending -->
+                <div class="form-group">
+                    <label for="html_template">Tải lên file HTML (Chứa nội dung email)</label>
+                    <input type="file" id="html_template" name="html_template" accept=".html">
+                </div>
+
+                <!-- Form upload file poster -->
+                <div class="form-group">
+                    <label for="poster">Tải lên ảnh poster</label>
+                    <input type="file" id="poster" name="poster" accept="image/*">
+                </div>
+
+                <!-- Tải ảnh -->
+                <div class="right-fill-form">
+                    <!-- <h3>Ảnh Poster</h3>
+                    <input type="file" id="poster" name="poster" accept="image/*"> -->
+
+                    <!-- Khung preview -->
+                    <div class="poster-preview">
+                        <img id="poster-img" src="" alt="Xem trước poster" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">➕ Thêm hội nghị</button>
+                </div>
+
+
+            </form>
+        </div>
+
+
+    </div>
+
+
+    <script>
+        // Giới hạn số lượng ký tự ghi chú nhập vào
+        const note = document.getElementById("description");
+        const charCount = document.getElementById("char-count");
+
+        note.addEventListener("input", () => {
+            charCount.textContent = `${note.value.length} / 200`;
+
+            // Nếu gần chạm giới hạn thì đổi màu cảnh báo
+            if (note.value.length > 180) {
+                charCount.style.color = "red";
+            } else {
+                charCount.style.color = "#666";
+            }
+        });
+    </script>
+
+    <script>
+        // Preview ảnh
+        const posterInput = document.getElementById("poster");
+        const posterImg = document.getElementById("poster-img");
+
+        posterInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    posterImg.src = e.target.result;
+                    posterImg.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                posterImg.style.display = "none";
+            }
+        });
+    </script>
+
+    <!-- <script>
+        // Alert thành công thêm hội nghị
+        document.getElementById("conference-form").addEventListener("submit", async function (e) {
+            e.preventDefault(); // chặn submit mặc định
+
+            let formData = new FormData(this);
+
+            let response = await fetch("home/addconference", {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok) {
+                let result = await response.json();
+                alert(result.message); // hiện thông báo
+                this.reset(); // clear form
+            } else {
+                alert("Có lỗi xảy ra khi thêm hội nghị!");
+            }
+        });
+    </script> -->
+    </form>
+
+</body>
+
+</html>

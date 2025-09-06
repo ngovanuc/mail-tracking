@@ -1,0 +1,418 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f8fafc;
+    margin: 0;
+    padding: 15px;
+
+}
+
+.page-header {
+    display: flex;
+    border-radius: 12px;
+    justify-content: space-between;
+    /* h1 trái, nút phải */
+    align-items: center;
+    padding: 16px 24px;
+    background: #ec1dde;
+    /* nền xám nhạt */
+    border-bottom: 1px solid #f8f9f9;
+}
+
+h1 {
+    margin: 0;
+    color: #0f172a;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    /* h1 bên trái, nút bên phải */
+    align-items: center;
+    padding: 16px 24px;
+    background: #e673cf;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+
+.right-menu {
+    display: flex;
+    /* sắp xếp các phần tử con theo hàng ngang */
+    gap: 10px;
+    /* khoảng cách giữa các nút */
+    margin: 10px 0;
+}
+
+/* Style chung cho các nút */
+.right-menu a {
+    display: inline-flex;
+    /* để căn giữa chữ */
+    align-items: center;
+    /* căn giữa theo chiều dọc */
+    justify-content: center;
+    /* căn giữa theo chiều ngang */
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: #3b82f6;
+    /* xanh dương */
+    color: #f9f7f9;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background .2s ease, transform .2s ease;
+    font-size: 14px;
+    min-width: 80px;
+    /* giữ độ rộng tối thiểu để nút đều nhau */
+    cursor: pointer;
+}
+
+.right-menu a:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+}
+
+.right-menu a:active {
+    background: #1d4ed8;
+    transform: translateY(0);
+}
+
+
+/* Card grid */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 20px;
+}
+
+/* Bảng  */
+.information {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 cột đều nhau */
+    gap: 16px 24px;
+    /* khoảng cách giữa ô */
+    padding: 20px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.info-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 4px;
+}
+
+.info-value {
+    color: #1e293b;
+}
+
+.info-value a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.info-value a:hover {
+    color: #1d4ed8;
+}
+
+/* Card */
+
+.card {
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.card .value {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 4px 0;
+}
+
+.card .note {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* Màu sắc từng card */
+.blue {
+    background: #3b82f6;
+}
+
+.cyan {
+    background: #7dd420;
+}
+
+.purple {
+    background: #a855f7;
+}
+
+.green {
+    background: #34d399;
+}
+
+.red {
+    background: #ee3c3c;
+}
+
+.orange {
+    background: #795c44;
+}
+
+/* Responsive tối ưu hơn trên mobile */
+@media (max-width: 500px) {
+    .card {
+        padding: 16px;
+        text-align: center;
+    }
+
+    .card .value {
+        font-size: 22px;
+    }
+}
+
+/* Biểu đồ và thống kê */
+.dash-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+/* Card riêng cho dashboard */
+.dash-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Bars (chart) */
+.dash-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 250px;
+    margin-top: 12px;
+}
+
+.dash-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dash-bar-fill {
+    width: 100%;
+    background: #8b5cf6;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s;
+}
+
+.dash-bar-label {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #555;
+}
+
+
+/* Circles (ratios) */
+.dash-circles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.dash-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.dash-circle svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+
+.dash-circle .dash-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.8;
+}
+
+.dash-circle .dash-progress {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+}
+
+.dash-progress.dash-sent {
+    stroke: #3b82f6;
+}
+
+.dash-progress.dash-opened {
+    stroke: #10b981;
+}
+
+.dash-progress.dash-clicked {
+    stroke: #f59e0b;
+}
+
+.dash-circle-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.dash-circle-text strong {
+    font-size: 18px;
+    display: block;
+}
+
+.dash-circle-text span {
+    font-size: 12px;
+    color: #666;
+}
+
+
+/* ******************** */
+/* Card riêng cho dashboard để tránh trùng class */
+.dash-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* Email per Day to the left (rộng hơn) + Ratios bên phải */
+    gap: 20px;
+    box-sizing: border-box;
+    /* display: flex; */
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.outer {
+    height: 160px;
+    width: 160px;
+    padding: 20px;
+    box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+        -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+}
+
+/* Responsive: khi nhỏ hơn 900px thì 2 section xếp dọc */
+@media (max-width: 900px) {
+    .dash-container {
+        grid-template-columns: 1fr;
+        /* chỉ còn 1 cột */
+    }
+}
+
+.dash-container {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    stroke: url(#mailGauge);
+    stroke-dasharray: 0, 100;
+    /* bắt đầu từ 0% */
+    transition: stroke-dasharray .6s ease;
+}
+
+.dash-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+}
+
+/* Lưới 3 cột -> tự chia 2 hàng (3 + 2) */
+.dash-circles-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(140px, 1fr));
+    gap: 30px;
+    margin: 20px;
+    padding: 20px;
+    align-items: center;
+}
+
+.dash-circles-grid .skill {
+    width: 160px;
+    height: 160px;
+    position: relative;
+}
+
+.dash-circles-grid .outer {
+    height: 160px;
+    width: 160px;
+    padding: 20px;
+    box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+        -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+}
+
+.dash-circles-grid .inner {
+    height: 120px;
+    width: 120px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 4px 4px 6px -1px rgba(0, 0, 0, 0.2),
+        inset -4px -4px 6px -1px rgba(255, 255, 255, 0.7),
+        -0.5px -0.5px 0px rgba(255, 255, 255, 1),
+        0.5px 0.5px 0px rgba(0, 0, 0, 0.15),
+        0px 12px 10px -10px rgba(0, 0, 0, 0.005);
+}
+
+.dash-circles-grid #number1,
+.dash-circles-grid #number2,
+.dash-circles-grid #number3,
+.dash-circles-grid #number4,
+.dash-circles-grid #number5 {
+    font-weight: 600;
+    color: #555;
+    font-size: 30px;
+}
+
+@keyframes anim {
+    100% {
+        stroke-dashoffset: 157.5;
+    }
+}
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+circle {
+    fill: none;
+    stroke: url(#GradientColor);
+    stroke-width: 20px;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s linear;
+}

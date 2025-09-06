@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/public/contacts.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="left-header">
+            <div class="title-header">
+                <h1>Conference contacts: {{ conference_name }}</h1>
+            </div>
+        </div>
+        <div class="right-header">
+            <div class="back-conference">
+                <a href="/home/{{ conference.name }}">
+                    <div class="back-conference-box">
+                        Back to Conference detail
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <!-- <div class="function-board">
+        <div class="import-contacts">
+            <form id="excel-form" action="/home/{{ conference.name }}/contacts" method="post"
+                enctype="multipart/form-data">
+                <label for="excel">
+                    <h4>Upload Excel (.xlsx, .xls)</h4>
+                </label>
+                <br>
+                <input id="excel_file" name="file" type="file"
+                    accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
+                <br>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+        <div class="import-template">
+            <form id="html-form" action="/home/{{ conference.name }}/contacts/import-html" method="post"
+                enctype="multipart/form-data">
+                <label for="html-file">
+                    <h4>Upload HTML file (.html)</h4>
+                </label>
+                <br>
+                <input id="html_file" name="html_file" type="file" accept=".html,text/html" />
+                <br>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+        <div class="export"></div>
+    </div> -->
+
+    <br>
+
+    <div class="container-box">
+        <div class="left-container">
+            <div class="header-left">
+                <div class="search-bar">
+                    <input type="text" placeholder="🔍 Tìm theo tên hoặc email..." id="searchInput">
+                </div>
+            </div>
+            <div class="body-left">
+                <ul class="column-name">
+                    <li class="row">
+                        <div class="cell">Full Name</div>
+                        <div class="cell">Email Address</div>
+                        <div class="cell">Sent</div>
+                    </li>
+                </ul>
+                <ul class="email-list" id="emailList">
+                    {% if conference.recipients|length == 0 %}
+                    <li>
+                        <div class="email-name">Không có contact nào</div>
+                    </li>
+                    {% else %}
+                    {% for contact in conference.recipients %}
+                    <li>
+                        <div class="email-name">{{ contact.name }}</div>
+                        <div class="email-address">{{ contact.email }}</div>
+                        <div class="email-status">
+                            {% if contact.status.sent %}
+                            <span class="check">✔</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="right-container">
+            <div class="header-right">
+                <h2>Show HTML template email sending</h2>
+            </div>
+            <div class="body-right">
+                <!-- template_email_sending is an HTML file that uploaded by user template_email_sending -->
+                {% if conference.html_template_filepath %}
+                <iframe src="/home/{{ conference.name }}/{{ conference.name_template }}"
+                    style="border:none; width:100%; height:600px;"></iframe>
+                {% else %}
+                <p>No template email uploaded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <br>
+
+    <script>
+        // Simple search filter
+        const searchInput = document.getElementById("searchInput");
+        const emailList = document.getElementById("emailList").getElementsByTagName("li");
+
+        searchInput.addEventListener("input", function () {
+            const filter = this.value.toLowerCase();
+            for (let item of emailList) {
+                const name = item.querySelector(".email-name").textContent.toLowerCase();
+                const email = item.querySelector(".email-address").textContent.toLowerCase();
+                item.style.display = (name.includes(filter) || email.includes(filter)) ? "" : "none";
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hội nghị đã gửi mail</title>
+    <link rel="stylesheet" href="/public/home.css" />
+</head>
+
+<body>
+    <header class="page-header">
+        <h1>Hội nghị đã gửi mail</h1>
+        <a href="/home/addconference">
+            <button id="btn-add" class="btn btn-primary">+ Thêm hội nghị mới</button>
+        </a>
+    </header>
+
+    <!-- Thanh tìm kiếm/lọc (tùy chọn) -->
+    <section class="toolbar">
+        <input id="search" type="search" placeholder="Tìm theo tên hội nghị..." aria-label="Tìm hội nghị" />
+    </section>
+
+    <!-- Lưới ô vuông -->
+    <main class="grid" id="conference-grid" aria-live="polite">
+        {% if no_conference %}
+        <p class="empty-state">{{ no_conference }}</p>
+        {% endif %}
+
+        {% for conf in conferences %}
+        <article class="card" tabindex="0">
+            <div class="card-inner">
+                <h2 class="card-title"><b>{{ conf.name }}</b></h2>
+                <hr class="card-divider" />
+                <p class="card-meta"><b>Location:</b> {{ conf.location }}</p>
+                <p class="card-meta"><b>Date:</b> {{ conf.date }}</p>
+                <p class="card-sub"><b>Total recipients:</b> {{ conf.recipients | length }}</p>
+                <p class="card-sub"><b>Total sent:</b> {{ conf.total_sent }}</p>
+                <button class="btn btn-outline btn-detail">View details</button>
+            </div>
+        </article>
+        {% endfor %}
+    </main>
+
+    <script>
+
+        // Tìm kiếm đơn giản
+        const search = document.getElementById('search');
+        search.addEventListener('input', () => {
+            const q = search.value.trim().toLowerCase();
+            document.querySelectorAll('.card').forEach(card => {
+                const name = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+                card.style.display = name.includes(q) ? '' : 'none';
+            });
+        });
+
+        // Lắng nghe nút "Xem chi tiết"
+        const grid = document.getElementById('conference-grid');
+
+        grid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-detail');
+            if (!btn) return;
+            const card = e.target.closest('.card');
+            const confName = card.querySelector('.card-title')?.textContent.trim();
+            if (confName) {
+                window.location.href = `/home/${encodeURIComponent(confName)}`;
+            }
+        });
+
+    </script>
+</body>
+
+</html>

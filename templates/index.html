@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/public/index.css">
+</head>
+<body>
+    <div class="logo">
+        <img src="/images/VIEN IAD_signature.png" alt="Logo">
+    </div>
+    <h1 class="main-title">{{ title }}</h1>
+    <div class="container">
+        <form class="login-form" method="post" action="{{ login_url }}">
+            <h2 style="text-align:center; margin-bottom:16px; color: #000000ff;">Login</h2>
+            {% if login_error %}
+            <div style="color: red; text-align: center; margin-bottom: 8px;">{{ message }}</div>
+            {% endif %}
+            <input type="text" name="username" placeholder="Gmail account" required>
+            <input type="password" name="password" placeholder="Gmail password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <div class="footer">
+        &copy; 2025 INTERNATIONAL RESEARCH INSTITUTE FOR ARTIFICIAL INTELLIGENCE AND DATA SCIENCE (IAD) - DONG A UNIVERSITY
+    </div>
+</body>
+</html>

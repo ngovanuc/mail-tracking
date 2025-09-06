@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered Image</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            /* toàn bộ chiều cao màn hình */
+            display: flex;
+            justify-content: center;
+            /* căn giữa theo chiều ngang */
+            align-items: center;
+            /* căn giữa theo chiều dọc */
+            background-color: #f3f4f6;
+            /* màu nền nhẹ */
+        }
+
+        img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            /* bo góc cho đẹp */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            /* thêm shadow */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- path_to_poster_of_conference -->
+    <!-- Example: ../uploaded/conference_name/poster.jpg -->
+    <img src="../uploaded/{{ conference_name }}/{{ poster_filename }}" alt="Poster of {{ conference_name }}">
+    <!-- <img src="../uploaded/RAIDS 2026 DEMO/Poster Call for paper - RAIDS 2026 - trang 3.png"
+        alt="Poster of {{ conference_name }}"> -->
+</body>
+
+</html>
