@@ -73,7 +73,7 @@ body {
 .card {
     position: relative;
     /* cần để ::before hoạt động chuẩn */
-    background: rgb(239, 237, 237);
+    background: rgb(220, 220, 220);
     border: 1px solid rgba(28, 172, 47, 0.1);
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(36, 36, 36, 0.47);

@@ -67,13 +67,21 @@
                 </div>
             </div>
             <div class="body-left">
-                <ul class="column-name">
+                <div class="header_table">
+                    <div class="name">Full Name</div>
+                    <div class="email">Email Address</div>
+                    <div class="status">Sent</div>
+                    <div class="status">Opened</div>
+                    <div class="status">Clicked</div>
+                    <div class="status">Unsubscribed</div>
+                </div>
+                <!-- <ul class="column-name">
                     <li class="row">
                         <div class="cell">Full Name</div>
                         <div class="cell">Email Address</div>
                         <div class="cell">Sent</div>
                     </li>
-                </ul>
+                </ul> -->
                 <ul class="email-list" id="emailList">
                     {% if conference.recipients|length == 0 %}
                     <li>
@@ -86,7 +94,30 @@
                         <div class="email-address">{{ contact.email }}</div>
                         <div class="email-status">
                             {% if contact.status.sent %}
-                            <span class="check">✔</span>
+                                <span class="check">✔</span>
+                            {% else %}
+                                <span class="cross">✗</span>
+                            {% endif %}
+                        </div>
+                        <div class="email-status">
+                            {% if contact.status.opened %}
+                                <span class="check">✔</span>
+                            {% else %}
+                                <span class="cross">✗</span>
+                            {% endif %}
+                        </div>
+                        <div class="email-status">
+                            {% if contact.status.clicked %}
+                                <span class="check">✔</span>
+                            {% else %}
+                                <span class="cross">✗</span>
+                            {% endif %}
+                        </div>
+                        <div class="email-status">
+                            {% if contact.status.unsubscribed %}
+                                <span class="check">✔</span>
+                            {% else %}
+                                <span class="cross">✗</span>
                             {% endif %}
                         </div>
                     </li>
@@ -102,15 +133,14 @@
             <div class="body-right">
                 <!-- template_email_sending is an HTML file that uploaded by user template_email_sending -->
                 {% if conference.html_template_filepath %}
-                <iframe src="/home/{{ conference.name }}/{{ conference.name_template }}"
-                    style="border:none; width:100%; height:600px;"></iframe>
+                <iframe src="/template/{{ conference_name }}" style="border:none; width:100%; height:600px;"></iframe>
                 {% else %}
                 <p>No template email uploaded.</p>
                 {% endif %}
             </div>
         </div>
     </div>
-    
+
     <br>
 
     <script>

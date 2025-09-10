@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/public/sending.css" />
+</head>
+
+<body>
+    <div class="header">
+        <div class="left-header">
+            <h1>Sending Emails</h1>
+        </div>
+        <div class="right-header">
+            <div class="back-button">
+                <a href="/home/{{ conference_name }}">
+                    <div class="back-button">Back to conference detail</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="status">
+        <h3>Lịch gửi thư hôm nay đã hoàn thành!</h3>
+        <!-- <h3>{{ status_message }}</h3> -->
+    </div>
+
+    <br>
+
+    <div class="body">
+        <div class="left-body">
+            <div class="header-left-body">
+                <h3>Danh sách gửi thư hôm nay</h3>
+            </div>
+            <!-- <br> -->
+            <div class="left-container">
+                <div class="column-name">
+                    <ul class="row-column-name">
+                        <li class="full-name">Full Name</li>
+                        <li class="email-address">Email Address</li>
+                    </ul>
+                </div>
+                <div class="data">
+                    <ul class="data-rows">
+                        {% for contact in contacts %}
+                        <li class="data-row">
+                            <span class="name">{{ contact.name }}</span>
+                            <span class="email">{{ contact.email }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="right-body">
+            <div class="header-tempt">
+                <!-- <h3>🔑 Gmail password application authentication</h3> -->
+            </div>
+            <div class="header-right-body">
+                <h3>🔑 Gmail password application authentication</h3>
+                <br>
+                <form action="/home/{{ conference_name }}/sending" method="post" id="gmailForm" class="gmail-form">
+                    <label for="gmail">Gmail Address Sender:</label>
+                    <input type="email" id="gmail" name="gmail" required>
+                    <br>
+                    <label for="app-password">App Password Sender:</label>
+                    <input type="password" id="app_password" name="app_password" required>
+                    <br>
+                    <button type="submit">Bắt đầu gửi thư</button>
+                </form>
+                <br>
+                <p id="result">result</p>
+            </div>
+
+            <script>
+                document.getElementById("gmailForm").addEventListener("submit", async (event) => {
+                    event.preventDefault();
+
+                    const gmail = document.getElementById("gmail").value;
+                    const app_password = document.getElementById("app_password").value;
+
+                    const result = document.getElementById("result");
+                    result.innerHTML = ""; // Clear previous results
+
+                    try {
+                        const response = await fetch(`/home/{{ conference_name }}/sending`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            body: new URLSearchParams({
+                                gmail: gmail,
+                                app_password: app_password,
+                            }),
+                        });
+
+                        if (response.ok) {
+                            const reader = response.body.getReader();
+                            const decoder = new TextDecoder("utf-8");
+                            let done = false;
+
+                            while (!done) {
+                                const { value, done: readerDone } = await reader.read();
+                                done = readerDone;
+                                if (value) {
+                                    result.innerHTML += `<br>${decoder.decode(value)}`;
+                                }
+                            }
+                        } else {
+                            result.innerHTML = `<br>Error: ${response.statusText}`;
+                        }
+                    } catch (error) {
+                        result.innerHTML = `<br>Error: ${error.message}`;
+                    }
+                });
+            </script>
+        </div>
+    </div>
+</body>
+
+</html>

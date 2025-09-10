@@ -30,13 +30,13 @@
         {% for conf in conferences %}
         <article class="card" tabindex="0">
             <div class="card-inner">
-                <h2 class="card-title"><b>{{ conf.name }}</b></h2>
-                <hr class="card-divider" />
-                <p class="card-meta"><b>Location:</b> {{ conf.location }}</p>
-                <p class="card-meta"><b>Date:</b> {{ conf.date }}</p>
-                <p class="card-sub"><b>Total recipients:</b> {{ conf.recipients | length }}</p>
-                <p class="card-sub"><b>Total sent:</b> {{ conf.total_sent }}</p>
-                <button class="btn btn-outline btn-detail">View details</button>
+            <h2 class="card-title" style="color: #111;"><b>{{ conf.name }}</b></h2>
+            <hr class="card-divider" />
+            <p class="card-meta" style="color: #111;"><b>Location:</b> {{ conf.location }}</p>
+            <p class="card-meta" style="color: #111;"><b>Date:</b> {{ conf.date }}</p>
+            <p class="card-sub" style="color: #111;"><b>Total recipients:</b> {{ conf.recipients | length }}</p>
+            <p class="card-sub" style="color: #111;"><b>Total sent:</b> {{ conf.total_sent }}</p>
+            <button class="btn btn-outline btn-detail">View details</button>
             </div>
         </article>
         {% endfor %}

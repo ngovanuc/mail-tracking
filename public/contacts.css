@@ -156,53 +156,56 @@ a {
     border-radius: 20px;
 }
 
-.column-name {
-    display: contents;
-    margin: 0;
-    padding: 0;
-}
-
-.column-name .row {
+.header_table {
+    width: 100%;
+    height: 50px;
     display: grid;
-    grid-template-columns: 1fr 2fr 40px;
+    grid-template-columns: 1.5fr 2fr repeat(4, 1fr);
     align-items: center;
-    padding: 12px 16px;
-    border-bottom: 2px solid #9ca3af;
     background-color: #e5e7eb;
+    border-bottom: 2px solid #9ca3af;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 14px;
+    padding: 0 16px;
 }
 
-.email-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.header_table .name {
+    padding-left: 8px;
 }
 
+.header_table .email {
+    padding-left: 8px;
+}
+
+.header_table .status {
+    text-align: center;
+}
+
+/* Email list columns match header columns */
 .email-list li {
     display: grid;
-    grid-template-columns: 1fr 2fr 40px;
+    grid-template-columns: 2.3fr 2fr repeat(4, 1fr);
     align-items: center;
     padding: 12px 16px;
-    border-bottom: 2px solid #d1d5db;
-    /* tăng độ rõ nét */
+    border-bottom: 1px solid #d1d5db;
     transition: background 0.2s, transform 0.1s;
     cursor: pointer;
 }
 
 .email-list li:hover {
-    background: #5ee56c;
+    background: #ec98e8;
     transform: scale(1.01);
 }
 
 .email-name {
     font-weight: 500;
+    padding-left: 8px;
 }
 
 .email-address {
-    color: #6b7280;
     font-size: 14px;
+    padding-left: 8px;
 }
 
 .email-status {
@@ -210,9 +213,19 @@ a {
 }
 
 .email-status .check {
-    color: #10b981;
+    color: #22ff00;
     font-size: 16px;
 }
+
+.cross {
+    opacity: 0.4;
+    transition: opacity 0.2s;
+}
+
+.email-list li:hover .cross {
+    opacity: 1;
+}
+
 
 /* Right Container */
 .right-container {

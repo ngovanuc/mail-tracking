@@ -1,51 +1,63 @@
 from src.conferences.init import conferences_collection
+import datetime
 
 
-def get_conference_information(conference):
-    # Total recipients
-    if conference.get("recipients") is None or len(conference.get("recipients")) == 0:
-        total_recipients = 0
-    else:
-        total_recipients = len(conference.get("recipients", []))
-
-    # Total sent
-    if total_recipients == 0:
-        total_sent = 0
-    else:
-        total_sent = sum(1 for r in conference.get("recipients", []) if r.get("status") == "sent")
-
-    # Total opened
-    if total_recipients == 0:
-        total_opened = 0
-    else:
-        total_opened = sum(1 for r in conference.get("recipients", []) if r.get("status") == "opened")
-
-    # Total clicked
-    if total_recipients == 0:
-        total_clicked = 0
-    else:
-        total_clicked = sum(1 for r in conference.get("recipients", []) if r.get("status") == "clicked")
-
-    # Total failed
-    if total_recipients == 0:
-        total_failed = 0
-    else:
-        total_failed = sum(1 for r in conference.get("recipients", []) if r.get("status") == "failed")
-
-    # Unsubscribed
-    if total_recipients == 0:
-        total_unsubscribed = 0
-    else:
-        total_unsubscribed = sum(1 for r in conference.get("recipients", []) if r.get("status") == "unsubscribed")
-    # total_unsubscribed = sum(1 for r in conference.get("recipients", []) if r.get("status") == "unsubscribed")
-
+async def get_conference_information(conference):
+    recipients = conference.get("recipients", [])
+    total_recipients = len(recipients)
+    def count(key, default):
+        return sum(1 for r in recipients if r.get("status", {}).get(key, default))
     analysis = {
         "total_recipients": total_recipients,
-        "total_sent": total_sent,
-        "total_opened": total_opened,
-        "total_clicked": total_clicked,
-        "total_failed": total_failed,
-        "total_unsubscribed": total_unsubscribed    
+        "total_sent": conference.get("total_sent", 0),
+        "total_opened": conference.get("total_opened", 0),
+        "total_clicked": conference.get("total_clicked", 0),
+        "total_failed": conference.get("total_failed", 0),
+        "total_unsubscribed": conference.get("total_unsubscribed", 0),
     }
-
+    for k in analysis:
+        if k != "total_recipients":
+            analysis[k] = min(analysis[k], total_recipients)
     return analysis
+
+
+async def mail_sent_this_week(conference_name: str):
+    conference = conferences_collection.find_one({"name": conference_name})
+    if not conference:
+        return [0, 0, 0, 0, 0, 0, 0]
+
+    recipients = conference.get("recipients", [])
+    now = datetime.datetime.now()
+    start_of_week = now - datetime.timedelta(days=now.weekday())
+    start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+    mail_sent_per_day = [0] * 7  # Monday to Sunday
+
+    for r in recipients:
+        sent_time = r.get("status", {}).get("date_sent")
+        if sent_time:
+            # sent_time is assumed to be a datetime object
+            if isinstance(sent_time, str):
+                sent_time = datetime.datetime.fromisoformat(sent_time)
+            if start_of_week <= sent_time < start_of_week + datetime.timedelta(days=7):
+                day_index = (sent_time.weekday())  # Monday=0, Sunday=6
+                mail_sent_per_day[day_index] += 1
+
+    # return mail_sent_per_day
+    # mail_sent_per_day = [10, 100, 200, 300, 350, 400, 500] # Giả lập
+    return mail_sent_per_day
+
+
+async def ratio_report(analysis: dict):
+    total_recipients = analysis.get("total_recipients", 0)
+    if total_recipients == 0:
+        return [0.0, 0.0, 0.0, 0.0, 0.0]
+    return [
+        round((analysis.get("total_sent", 0) / total_recipients) * 100, 2),         # Sent rate
+        round((analysis.get("total_opened", 0) / total_recipients) * 100, 2),       # Open rate
+        round((analysis.get("total_clicked", 0) / total_recipients) * 100, 2),      # Click rate
+        round((analysis.get("total_failed", 0) / total_recipients) * 100, 2),       # Failed rate
+        round((analysis.get("total_unsubscribed", 0) / total_recipients) * 100, 2)  # Unsubscribed rate
+    ]
+
+
+

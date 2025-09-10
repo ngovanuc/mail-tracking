@@ -12,17 +12,23 @@ from starlette.middleware.sessions import SessionMiddleware
 
 import fastapi
 from fastapi import FastAPI, Depends, Form, HTTPException, status, Request, Cookie, UploadFile, File
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse, Response, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from src.authentication.init import mail_tracking_database
 from src.authentication.init import users_collection
+
 from src.conferences.init import conferences_collection
 from src.conferences.create_new_conference import create_new_conference
 from src.conferences.get_conference_information import get_conference_information
+from src.conferences.get_conference_information import ratio_report
+from src.conferences.get_conference_information import mail_sent_this_week
 
 from src.processing_upload.processing_contacts import process_uploaded_excel
+
+from src.email_sending.get_list_sending import contacts_to_send
+from src.email_sending.send_email import send
 
 os.system("cls")
 
@@ -80,12 +86,15 @@ async def home(request: Request):
         no_conference = "No conferences available ❌"
     else:
         no_conference = ""
-    return templates.TemplateResponse("home.html", {
-        "request": request,
-        "no_conference": no_conference,
-        "title": "Mail Tracking Home",
-        "conferences": conferences
-    })
+    return templates.TemplateResponse(
+        "home.html", 
+        {
+            "request": request,
+            "no_conference": no_conference,
+            "title": "Mail Tracking Home",
+            "conferences": conferences
+        }
+    )
 
 
 @app.post("/home/addconference")
@@ -97,6 +106,7 @@ async def add_conference(
     link_conference: str = Form(...),
     description: str = Form(""),
     excel_file: UploadFile | None = File(None),
+    subject: str = Form(None),
     html_template: UploadFile | None = File(None),
     poster: UploadFile | None = File(None)
 ):
@@ -169,6 +179,7 @@ async def add_conference(
         "link_id": str(uuid.uuid4()),
         "description": description,
         "excel_filepath": excel_filepath,
+        "subject": subject,
         "name_template": html_template.filename if html_template else None,
         "html_template_filepath": html_template_filepath,
         "poster_filename": poster.filename if poster else None,
@@ -201,29 +212,39 @@ async def conference_detail(request: Request, conference_name: str):
     if not conference:
         return HTMLResponse(f"<h2>Không tìm thấy hội nghị: {conference_name}</h2>", status_code=404)
     
-    conference_analysis = get_conference_information(conference=conference)
+    conference_analysis = await get_conference_information(conference=conference)
+    ratio_analysis = await ratio_report(conference_analysis)
+    sent_this_week = await mail_sent_this_week(conference_name=conference_name)
     
-    return templates.TemplateResponse("conference_detail.html", {
-        "request": request,
-        "conference": conference,
-        # "total_recipients": conference_analysis["total_recipients"],
-        # "total_sent": conference_analysis["total_sent"],  
-        # "total_opened": conference_analysis["total_opened"],
-        # "total_clicked": conference_analysis["total_clicked"],
-        # "total_failed": conference_analysis["total_failed"],
-        # "total_unsubscribed": conference_analysis["total_unsubscribed"],
-        # "mail_sent_per_day": conference_analysis["mail_sent_per_day"]
-    })
+    return templates.TemplateResponse(
+        "conference_detail.html", 
+        {
+            "request": request,
+            "conference": conference,
+            "total_recipients": conference_analysis["total_recipients"],
+            "total_sent": conference_analysis["total_sent"],  
+            "total_opened": conference_analysis["total_opened"],
+            "total_clicked": conference_analysis["total_clicked"],
+            "total_failed": conference_analysis["total_failed"],
+            "total_unsubscribed": conference_analysis["total_unsubscribed"],
+            "mail_sent_per_day": await mail_sent_this_week(conference_name),
+            "ratio_analysis": ratio_analysis
+        }
+    )
 
 
 @app.get("/home/{conference_name}/contacts", response_class=HTMLResponse)
 async def contacts(request: Request, conference_name: str):
     conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
-    return templates.TemplateResponse("contacts.html", {
-        "request": request,
-        "conference_name": conference_name,
-        "conference": conference,
-    })
+    print(f"[LOG] Loading contacts for conference: {conference_name}")
+    return templates.TemplateResponse(
+        "contacts.html", 
+        {
+            "request": request,
+            "conference_name": conference_name,
+            "conference": conference,
+        }
+    )
 
 
 @app.get("/template/{conference_name}", response_class=HTMLResponse)
@@ -327,36 +348,36 @@ async def track_click(request: Request, tracking_id, link_id):
 
 
 # Endpoint to unsubscribe email
-@app.get("/unsubscribe/{tracking_id}", response_class=HTMLResponse)
-async def unsubscribe(request: Request, tracking_id: str):
-    # Tìm email tương ứng với tracking_id
-    record = mail_tracking_database["recipients"].find_one({"tracking_id": tracking_id})
+# @app.get("/unsubscribe/{tracking_id}", response_class=HTMLResponse)
+# async def unsubscribe(request: Request, tracking_id: str):
+#     # Tìm email tương ứng với tracking_id
+#     record = mail_tracking_database["recipients"].find_one({"tracking_id": tracking_id})
 
-    if record:
-        # Cập nhật trạng thái đã hủy đăng ký
-        mail_tracking_database["recipients"].update_one(
-            {"tracking_id": tracking_id},
-            {"$set": {"status.unsubscribed": True}}
-        )
-        message = "You have successfully unsubscribed from our mailing list."
-    else:
-        message = "Invalid unsubscribe link."
+#     if record:
+#         # Cập nhật trạng thái đã hủy đăng ký
+#         mail_tracking_database["recipients"].update_one(
+#             {"tracking_id": tracking_id},
+#             {"$set": {"status.unsubscribed": True}}
+#         )
+#         message = "You have successfully unsubscribed from our mailing list."
+#     else:
+#         message = "Invalid unsubscribe link."
 
-    return templates.TemplateResponse("unsubscribe.html", {
-        "request": request,
-        "message": message
-    })
+#     return templates.TemplateResponse("unsubscribe.html", {
+#         "request": request,
+#         "message": message
+#     })
 
 
 # Unsubscribe by email
-# @app.get("/unsubscribe")
-# async def unsubscribe_get(request: Request):
-#     return templates.TemplateResponse(
-#         "unsubscribe.html", 
-#         {
-#             "request": request
-#         }
-#     )
+@app.get("/unsubscribe")
+async def unsubscribe_get(request: Request):
+    return templates.TemplateResponse(
+        "unsubscribe.html", 
+        {
+            "request": request
+        }
+    )
 @app.post("/unsubscribe")
 async def unsubscribe_post(request: Request, email: str = Form(...)):
     # Tìm email trong database
@@ -368,11 +389,55 @@ async def unsubscribe_post(request: Request, email: str = Form(...)):
             {"email": email},
             {"$set": {"status.unsubscribed": True}}
         )
+        print("status 1")
         message = "You have successfully unsubscribed from our mailing list."
     else:
+        print("status 2")
         message = "Email not found in our records."
 
-    return templates.TemplateResponse("unsubscribe.html", {
-        "request": request,
-        "message": message
-    })
+    return templates.TemplateResponse(
+        "unsubscribe.html", 
+        {
+            "request": request,
+            "message": message
+        }, 
+    )
+
+@app.get("/home/{conference_name}/sending")
+async def sending(request: Request, conference_name: str):
+    conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
+    if not conference:
+        return HTMLResponse(f"<h2>Không tìm thấy hội nghị: {conference_name}</h2>", status_code=404)
+    contacts = contacts_to_send(conference)
+    return templates.TemplateResponse(
+        "sending.html", 
+        {
+            "request": request,
+            "conference_name": conference_name,
+            "conference": conference,
+            "contacts": contacts
+        }
+    )
+
+
+@app.post("/home/{conference_name}/sending")
+async def sending_action(
+    request: Request, 
+    conference_name: str,
+    gmail: str = Form(...),
+    app_password: str = Form(...),
+):
+    print(f"gmail: {gmail}, app_password: {app_password}")
+
+    # Lấy danh sách gửi thư và thông tin hội nghị
+    conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
+    if not conference:
+        return JSONResponse(content={"error": "Conference not found."}, status_code=404)
+
+    contacts = contacts_to_send(conference)
+
+    # Sử dụng StreamingResponse để gửi trạng thái theo thời gian thực
+    return StreamingResponse(
+        send(conference, contacts, gmail, app_password), 
+        media_type="text/event-stream"
+    )

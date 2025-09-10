@@ -106,36 +106,14 @@
             <h2>Email sent per Day</h2>
             <div class="dash-bars">
                 <!-- Hệ số 0.5x so với số lượng mail gửi hằng ngày để ra số px chiều cao -->
+                {% set days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] %}
+                {% for count in mail_sent_per_day %}
                 <div class="dash-bar">
-                    <div>400</div>
-                    <div class="dash-bar-fill" style="height: 200px"></div>
-                    <span class="dash-bar-label">Mon</span>
+                    <div>{{ count }}</div>
+                    <div class="dash-bar-fill" style="height: {{ count * 0.4 }}px"></div>
+                    <span class="dash-bar-label">{{ days[loop.index0] }}</span>
                 </div>
-                <div class="dash-bar">
-                    <div>140</div>
-                    <div class="dash-bar-fill" style="height: 70px"></div>
-                    <span class="dash-bar-label">Tue</span>
-                </div>
-                <div class="dash-bar">
-                    <div>180</div>
-                    <div class="dash-bar-fill" style="height: 90px"></div>
-                    <span class="dash-bar-label">Wed</span>
-                </div>
-                <div class="dash-bar">
-                    <div>120</div>
-                    <div class="dash-bar-fill" style="height: 30px"></div>
-                    <span class="dash-bar-label">Thu</span>
-                </div>
-                <div class="dash-bar">
-                    <div>240</div>
-                    <div class="dash-bar-fill" style="height: 60px"></div>
-                    <span class="dash-bar-label">Fri</span>
-                </div>
-                <div class="dash-bar">
-                    <div>400</div>
-                    <div class="dash-bar-fill" style="height: 60px"></div>
-                    <span class="dash-bar-label">Sat</span>
-                </div>
+                {% endfor %}
             </div>
         </section>
 
@@ -245,7 +223,10 @@
     <br>
 
     <script>
-        const values = [80, 65, 40, 20, 10];
+        // const values = [80, 65, 40, 20, 10];
+        // biến ratio_analysis được inject từ server
+        // const values = {{ ratio_analysis | tojson }};
+        const values = {{ ratio_analysis | tojson | safe }};
 
         values.forEach((val, i) => {
             let number = document.getElementById(`number${i + 1}`);
