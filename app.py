@@ -383,19 +383,7 @@ async def unsubscribe_get(request: Request):
 @app.post("/unsubscribe")
 async def unsubscribe_post(request: Request, email: str = Form(...)):
     # Tìm email trong database
-    record = mail_tracking_database["recipients"].find_one({"email": email})
-
-    if record:
-        # Cập nhật trạng thái đã hủy đăng ký
-        mail_tracking_database["recipients"].update_one(
-            {"email": email},
-            {"$set": {"status.unsubscribed": True}}
-        )
-        print("status 1")
-        message = "You have successfully unsubscribed from our mailing list."
-    else:
-        print("status 2")
-        message = "Email not found in our records."
+    message = "You have successfully unsubscribed from our mailing list and no longer wish to receive emails. Thank you!"
 
     return templates.TemplateResponse(
         "unsubscribe.html", 
