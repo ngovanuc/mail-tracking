@@ -3,6 +3,15 @@ import datetime
 
 
 async def get_conference_information(conference):
+    """
+    Retrieves detailed information about a specific conference.
+
+    Args:
+        conference (dict): The conference details.
+
+    Returns:
+        dict: A dictionary containing analysis of the conference's recipients and status.
+    """
     recipients = conference.get("recipients", [])
     total_recipients = len(recipients)
     def count(key, default):
@@ -22,6 +31,15 @@ async def get_conference_information(conference):
 
 
 async def mail_sent_this_week(conference_name: str):
+    """
+    Calculates the number of emails sent for a conference during the current week.
+
+    Args:
+        conference_name (str): The name of the conference.
+
+    Returns:
+        list: A list of integers representing the number of emails sent each day of the week.
+    """
     conference = conferences_collection.find_one({"name": conference_name})
     if not conference:
         return [0, 0, 0, 0, 0, 0, 0]

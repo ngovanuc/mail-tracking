@@ -58,6 +58,18 @@ async def root(request: Request):
 
 @app.post("/login", response_class=HTMLResponse)
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    """
+    Handles user login by verifying credentials.
+
+    Args:
+        request (Request): The HTTP request object.
+        username (str): The username provided by the user.
+        password (str): The password provided by the user.
+
+    Returns:
+        RedirectResponse: Redirects to the home page if login is successful.
+        TemplateResponse: Renders the login page with an error message if login fails.
+    """
     ph = PasswordHasher()
     user = users_collection.find_one({"gmail_account": username})
     if user:
@@ -81,6 +93,15 @@ async def login(request: Request, username: str = Form(...), password: str = For
 
 @app.get("/home", response_class=HTMLResponse)
 async def home(request: Request):
+    """
+    Renders the home page with a list of conferences.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        TemplateResponse: Renders the home page template.
+    """
     conferences = mail_tracking_database["conferences_collection"].find().to_list()
     if len(conferences) == 0:
         no_conference = "No conferences available ❌"
@@ -110,7 +131,24 @@ async def add_conference(
     html_template: UploadFile | None = File(None),
     poster: UploadFile | None = File(None)
 ):
-    
+    """
+    Adds a new conference to the database.
+
+    Args:
+        request (Request): The HTTP request object.
+        name (str): The name of the conference.
+        location (str): The location of the conference.
+        date (str): The date of the conference.
+        link_conference (str): The link to the conference.
+        description (str): A description of the conference.
+        excel_file (UploadFile | None): An optional Excel file with contact data.
+        subject (str): The subject of the email to be sent.
+        html_template (UploadFile | None): An optional HTML template file for the email.
+        poster (UploadFile | None): An optional poster image file for the conference.
+
+    Returns:
+        JSONResponse: Returns a success message upon successful addition.
+    """
     # Create uploaded folder
     os.makedirs("uploaded", exist_ok=True)
 
@@ -203,6 +241,15 @@ async def add_conference(
 
 @app.get("/home/addconference")
 async def add_conference(request: Request):
+    """
+    Renders the conference addition page.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        TemplateResponse: Renders the conference addition page template.
+    """
     return templates.TemplateResponse("add_conference.html", {
         "request": request,
     })
@@ -210,6 +257,16 @@ async def add_conference(request: Request):
 
 @app.get("/home/{conference_name}", response_class=HTMLResponse)
 async def conference_detail(request: Request, conference_name: str):
+    """
+    Renders the details of a specific conference.
+
+    Args:
+        request (Request): The HTTP request object.
+        conference_name (str): The name of the conference.
+
+    Returns:
+        TemplateResponse: Renders the conference detail page template.
+    """
     conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
     if not conference:
         return HTMLResponse(f"<h2>Không tìm thấy hội nghị: {conference_name}</h2>", status_code=404)
@@ -237,6 +294,16 @@ async def conference_detail(request: Request, conference_name: str):
 
 @app.get("/home/{conference_name}/contacts", response_class=HTMLResponse)
 async def contacts(request: Request, conference_name: str):
+    """
+    Renders the contacts page for a specific conference.
+
+    Args:
+        request (Request): The HTTP request object.
+        conference_name (str): The name of the conference.
+
+    Returns:
+        TemplateResponse: Renders the contacts page template.
+    """
     conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
     print(f"[LOG] Loading contacts for conference: {conference_name}")
     return templates.TemplateResponse(
@@ -251,6 +318,16 @@ async def contacts(request: Request, conference_name: str):
 
 @app.get("/template/{conference_name}", response_class=HTMLResponse)
 async def show_template(request: Request, conference_name):
+    """
+    Renders the email template for a specific conference.
+
+    Args:
+        request (Request): The HTTP request object.
+        conference_name (str): The name of the conference.
+
+    Returns:
+        TemplateResponse: Renders the email template.
+    """
     conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
     name_template = conference.get("name_template") if conference else None
     poster_filename = conference.get("poster_filename") if conference else None
@@ -271,9 +348,16 @@ async def show_template(request: Request, conference_name):
 # Endpoint to tracking email opened
 @app.get("/track/open/{conference_name}/{poster_filename}")
 async def track_open(request: Request, conference_name: str, poster_filename: str):
-    """Mỗi lần client mở email, server sẽ log vào tracking_collection.
-    
-    Đây mới chỉ log được request, còn việc biết ai mở thì chưa thể biết được.
+    """
+    Logs email open events for tracking purposes.
+
+    Args:
+        request (Request): The HTTP request object.
+        conference_name (str): The name of the conference.
+        poster_filename (str): The filename of the poster being tracked.
+
+    Returns:
+        Response: Returns a tracking pixel image.
     """
     # 1. Ghi log vào database
     mail_tracking_database["tracking_collection"].insert_one({
@@ -292,6 +376,16 @@ async def track_open(request: Request, conference_name: str, poster_filename: st
 # Endpoint to tracking email opened
 @app.get("/track/open/{tracking_id}.png")
 async def track_open_pixel(request: Request, tracking_id: str):
+    """
+    Tracks email opens using a tracking pixel.
+
+    Args:
+        request (Request): The HTTP request object.
+        tracking_id (str): The tracking ID associated with the email.
+
+    Returns:
+        Response: Returns a 1x1 transparent GIF pixel.
+    """
     # Tìm email tương ứng với tracking_id
     record = mail_tracking_database["recipients"].find_one({"tracking_id": tracking_id})
 
@@ -320,6 +414,18 @@ async def track_open_pixel(request: Request, tracking_id: str):
 
 @app.get("/track/click/{tracking_id}/{link_id}")
 async def track_click(request: Request, tracking_id, link_id):
+    """
+    Tracks clicks on links in the email.
+
+    Args:
+        request (Request): The HTTP request object.
+        tracking_id (str): The tracking ID associated with the email.
+        link_id (str): The link ID to track.
+
+    Returns:
+        RedirectResponse: Redirects to the original link if found.
+        JSONResponse: Returns an error message if the link is not found.
+    """
     # Tìm thông tin người nhận
     recipient = mail_tracking_database["conferences_collection"].find_one({"tracking_id": tracking_id})
 
@@ -374,14 +480,34 @@ async def track_click(request: Request, tracking_id, link_id):
 # Unsubscribe by email
 @app.get("/unsubscribe")
 async def unsubscribe_get(request: Request):
+    """
+    Renders the unsubscribe page.
+
+    Args:
+        request (Request): The HTTP request object.
+
+    Returns:
+        TemplateResponse: Renders the unsubscribe page template.
+    """
     return templates.TemplateResponse(
         "unsubscribe.html", 
         {
             "request": request
         }
     )
+
 @app.post("/unsubscribe")
 async def unsubscribe_post(request: Request, email: str = Form(...)):
+    """
+    Handles unsubscribe requests from users.
+
+    Args:
+        request (Request): The HTTP request object.
+        email (str): The email address to unsubscribe.
+
+    Returns:
+        JSONResponse: Returns a success message upon successful unsubscription.
+    """
     # Tìm email trong database
     message = "You have successfully unsubscribed from our mailing list and no longer wish to receive emails. Thank you!"
 
@@ -395,6 +521,16 @@ async def unsubscribe_post(request: Request, email: str = Form(...)):
 
 @app.get("/home/{conference_name}/sending")
 async def sending(request: Request, conference_name: str):
+    """
+    Renders the sending page for a specific conference.
+
+    Args:
+        request (Request): The HTTP request object.
+        conference_name (str): The name of the conference.
+
+    Returns:
+        TemplateResponse: Renders the sending page template.
+    """
     conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
     if not conference:
         return HTMLResponse(f"<h2>Không tìm thấy hội nghị: {conference_name}</h2>", status_code=404)
@@ -420,6 +556,18 @@ async def sending_action(
     gmail: str = Form(...),
     app_password: str = Form(...),
 ):
+    """
+    Sends emails to contacts of a specific conference.
+
+    Args:
+        request (Request): The HTTP request object.
+        conference_name (str): The name of the conference.
+        gmail (str): The Gmail address to send emails from.
+        app_password (str): The app password for Gmail authentication.
+
+    Returns:
+        StreamingResponse: Streams the sending status in real-time.
+    """
     print(f"gmail: {gmail}, app_password: {app_password}")
 
     # Lấy danh sách gửi thư và thông tin hội nghị

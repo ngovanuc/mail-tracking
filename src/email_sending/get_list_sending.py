@@ -12,7 +12,15 @@ def is_same_day(date_str: str) -> bool:
         return False
 
 def contacts_to_send(conference) -> List[dict]:
-    """Lấy danh sách 100 liên hệ chưa được gửi thư."""
+    """
+    Retrieves a list of up to 100 contacts that have not been sent emails.
+
+    Args:
+        conference (dict): The conference details.
+
+    Returns:
+        List[dict]: A list of contact dictionaries to send emails to.
+    """
     last_sent_time_str = conference.get("last_sent_time")
     last_sent_count = conference.get("last_sent_count", 0)
     if is_same_day(last_sent_time_str) or last_sent_count == 400:

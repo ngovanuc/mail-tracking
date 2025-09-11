@@ -6,6 +6,16 @@ from src.conferences.init import mail_tracking_database
 from src.conferences.init import conferences_collection
 
 def process_uploaded_excel(excel_filepath, conference_name) -> list:
+    """
+    Processes an uploaded Excel file to extract contact information.
+
+    Args:
+        excel_filepath (str): The path to the Excel file.
+        conference_name (str): The name of the conference.
+
+    Returns:
+        list: A list of processed contact dictionaries.
+    """
     """Open an excel file and read all contact. Excel file mush have at least two columns:
         - "Name": Contain full name of contact (First column)
         - "Email": Contain email of contact (Second column)

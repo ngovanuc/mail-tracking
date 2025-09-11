@@ -2,6 +2,15 @@ from src.conferences.init import conferences_collection
 
 
 def create_new_conference(conference_information: dict):
+    """
+    Creates a new conference document in the database.
+
+    Args:
+        conference_information (dict): The details of the conference to create.
+
+    Returns:
+        ObjectId: The ID of the newly created conference document.
+    """
     """Example of a conference document:
         {
             "_id": ObjectId("60c72b2f9b1e8d3f4c8b4567"),

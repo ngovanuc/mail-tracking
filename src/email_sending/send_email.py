@@ -13,6 +13,16 @@ from src.conferences.init import conferences_collection
 from src.email_sending.get_list_sending import is_same_day
 
 def login_to_smtp(gmail, app_password):
+    """
+    Logs in to the SMTP server using the provided credentials.
+
+    Args:
+        gmail (str): The Gmail account to log in with.
+        app_password (str): The application password for the Gmail account.
+
+    Returns:
+        smtplib.SMTP: The logged-in SMTP server instance, or None if login fails.
+    """
     try:
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
@@ -25,6 +35,18 @@ def login_to_smtp(gmail, app_password):
     
 
 def send(conference, contacts, gmail, app_password):
+    """
+    Sends emails to a list of contacts for a specific conference.
+
+    Args:
+        conference (dict): The conference details.
+        contacts (list): The list of contacts to send emails to.
+        gmail (str): The Gmail account to use for sending emails.
+        app_password (str): The application password for the Gmail account.
+
+    Yields:
+        str: Status messages during the email sending process.
+    """
     is_today = is_same_day(conference.get("last_sent_time"))
     if not is_today:
         # Reset count if not same day
