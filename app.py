@@ -190,7 +190,9 @@ async def add_conference(
         "total_clicked": 0,
         "total_failed": 0,
         "total_unsubscribed": 0,
-        "total_responded": 0
+        "total_responded": 0,
+        "last_sent_time": None,
+        "last_sent_count": 0,
     }
 
     # Lưu thông tin hội nghị vào database
@@ -408,14 +410,17 @@ async def sending(request: Request, conference_name: str):
     conference = mail_tracking_database["conferences_collection"].find_one({"name": conference_name})
     if not conference:
         return HTMLResponse(f"<h2>Không tìm thấy hội nghị: {conference_name}</h2>", status_code=404)
-    contacts = contacts_to_send(conference)
+    # Check if need to send email
+
+    contacts, message = contacts_to_send(conference)
     return templates.TemplateResponse(
         "sending.html", 
         {
             "request": request,
             "conference_name": conference_name,
             "conference": conference,
-            "contacts": contacts
+            "contacts": contacts,
+            "message": message
         }
     )
 

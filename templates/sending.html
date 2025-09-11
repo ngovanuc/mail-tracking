@@ -25,8 +25,7 @@
     <br>
 
     <div class="status">
-        <h3>Lịch gửi thư hôm nay đã hoàn thành!</h3>
-        <!-- <h3>{{ status_message }}</h3> -->
+        <h3>{{ message }}</h3>
     </div>
 
     <br>
@@ -34,7 +33,7 @@
     <div class="body">
         <div class="left-body">
             <div class="header-left-body">
-                <h3>Danh sách gửi thư hôm nay</h3>
+                <h3>Danh sách cần gửi thư hôm nay</h3>
             </div>
             <!-- <br> -->
             <div class="left-container">
@@ -46,12 +45,19 @@
                 </div>
                 <div class="data">
                     <ul class="data-rows">
+                        {% if contacts|length == 0 %}
+                        <li class="data-row empty-row">
+                            <span class="name">Danh sách trống</span>
+                            <span class="email"></span>
+                        </li>
+                        {% else %}
                         {% for contact in contacts %}
                         <li class="data-row">
                             <span class="name">{{ contact.name }}</span>
                             <span class="email">{{ contact.email }}</span>
                         </li>
                         {% endfor %}
+                        {% endif %}
                     </ul>
                 </div>
             </div>

@@ -10,6 +10,8 @@ from email.mime.image import MIMEImage
 from src.conferences.init import mail_tracking_database
 from src.conferences.init import conferences_collection
 
+from src.email_sending.get_list_sending import is_same_day
+
 def login_to_smtp(gmail, app_password):
     try:
         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -23,6 +25,16 @@ def login_to_smtp(gmail, app_password):
     
 
 def send(conference, contacts, gmail, app_password):
+    is_today = is_same_day(conference.get("last_sent_time"))
+    if not is_today:
+        # Reset count if not same day
+        conferences_collection.update_one(
+            {"_id": conference["_id"]},
+            {"$set": {
+                "last_sent_time": str(datetime.datetime.now()),
+                "last_sent_count": 0
+            }}
+        )
     html_template_filepath = conference.get("html_template_filepath")
     try:
         with open(html_template_filepath, 'r', encoding='utf-8') as file:
@@ -104,6 +116,14 @@ def send(conference, contacts, gmail, app_password):
         {"$set": {
             "total_sent": conference.get("total_sent") + success_count,
             "total_failed": conference.get("total_failed") + failed_count
+        }}
+    )
+    # Update last sent time and count
+    conferences_collection.update_one(
+        {"_id": conference["_id"]},
+        {"$set": {
+            "last_sent_time": str(datetime.datetime.now()),
+            "last_sent_count": (conference.get("last_sent_count", 0) + success_count + failed_count)
         }}
     )
     server.quit()
